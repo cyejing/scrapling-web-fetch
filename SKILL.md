@@ -86,7 +86,7 @@ uv pip install scrapling html2text
 
 ## 附加资源
 - 用法参考：`references/usage.md`
-- 选择器策略：`references/selectors.md`
+- 网站配置：`scripts/site_configs.py`
 - 统一入口：`scripts/scrapling_fetch.py`
 
 ## 何时用这个技能

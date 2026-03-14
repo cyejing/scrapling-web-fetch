@@ -32,426 +32,7 @@ import urllib.request
 from pathlib import Path
 from urllib.parse import urlparse
 
-DEFAULT_SELECTORS = [
-    'article',
-    'main',
-    '.post-content',
-    '[class*="body"]',
-    'body',
-]
-
-SITE_CONFIGS = {
-    'mp.weixin.qq.com': {
-        'selectors': ['#js_article', '#js_content'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'预览时标签不可点.*',
-            r'Scan to Follow.*',
-            r'继续滑动看下一个.*',
-            r'轻触阅读原文.*',
-            r'微信扫一扫可打开此内容.*',
-            r'使用完整服务.*',
-            r'Scan with Weixin to.*',
-            r'use this Mini Program.*',
-            r'Video Mini Program Like.*',
-            r'轻点两下取消赞.*',
-            r'轻点两下取消在看.*',
-            r'Share Comment Favorite.*',
-            r'哎咆科技.*向上滑动看下一个.*',
-            r'\[Got It\].*',
-            r'\[Cancel\].*\[Allow\].*',
-            r'× 分析.*',
-            r'!\[跳转二维码\]\(\)',
-            r'!\[作者头像\]\([^\)]*\)',
-            r'!\[Image\].*',
-            r'!\[cover_image\].*',
-            r'在小说阅读器中沉浸阅读.*',
-            r'^_\d{4}年\d{1,2}月\d{1,2}日.*_$',
-            r'^_.*_$',
-            r'\[javascript:void\(0\);?\]',
-            r'\[.*\]\(javascript:.*\)',
-            r'!\[.*\]\(data:image.*\)',
-            r'!\[.*\]\(.*svg.*\)',
-        ],
-        'truncate_markers': [
-            '预览时标签不可点',
-            'Scan to Follow',
-            '继续滑动看下一个',
-            '轻触阅读原文',
-            '微信扫一扫可打开此内容',
-            'Scan with Weixin to',
-            'use this Mini Program',
-            '× 分析',
-        ],
-    },
-    'www.sohu.com': {
-        'selectors': ['article'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'推荐阅读.*',
-            r'相关阅读.*',
-            r'搜狐号.*',
-            r'小编推荐.*',
-            r'返回搜狐.*',
-            r'查看更多.*',
-            r'热点推荐.*',
-            r'猜你喜欢.*',
-            r'\[广告\].*',
-        ],
-        'truncate_markers': [
-            '推荐阅读',
-            '相关阅读',
-            '返回搜狐',
-            '小编推荐',
-        ],
-    },
-    'news.sohu.com': {
-        'selectors': ['article'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'推荐阅读.*',
-            r'相关阅读.*',
-            r'搜狐号.*',
-            r'小编推荐.*',
-            r'返回搜狐.*',
-            r'查看更多.*',
-            r'热点推荐.*',
-            r'猜你喜欢.*',
-            r'\[广告\].*',
-        ],
-        'truncate_markers': [
-            '推荐阅读',
-            '相关阅读',
-            '返回搜狐',
-            '小编推荐',
-        ],
-    },
-    'www.163.com': {
-        'selectors': ['.post_body'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'网易新闻.*',
-            r'责任编辑.*',
-            r'本文来源.*',
-            r'更多精彩.*',
-            r'扫码下载.*',
-            r'打开网易新闻.*',
-            r'\[广告\].*',
-            r'热点推荐.*',
-        ],
-        'truncate_markers': [
-            '责任编辑',
-            '本文来源',
-            '更多精彩',
-            '打开网易新闻',
-        ],
-    },
-    'news.163.com': {
-        'selectors': ['.post_body'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'网易新闻.*',
-            r'责任编辑.*',
-            r'本文来源.*',
-            r'更多精彩.*',
-            r'扫码下载.*',
-            r'打开网易新闻.*',
-            r'\[广告\].*',
-            r'热点推荐.*',
-        ],
-        'truncate_markers': [
-            '责任编辑',
-            '本文来源',
-            '更多精彩',
-            '打开网易新闻',
-        ],
-    },
-    'www.sina.com.cn': {
-        'selectors': ['article'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'新浪新闻.*',
-            r'责任编辑.*',
-            r'本文来源.*',
-            r'更多精彩.*',
-            r'扫码下载.*',
-            r'新浪客户端.*',
-            r'\[广告\].*',
-            r'热点推荐.*',
-            r'相关新闻.*',
-        ],
-        'truncate_markers': [
-            '责任编辑',
-            '本文来源',
-            '更多精彩',
-            '新浪客户端',
-        ],
-    },
-    'news.sina.com.cn': {
-        'selectors': ['article'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'新浪新闻.*',
-            r'责任编辑.*',
-            r'本文来源.*',
-            r'更多精彩.*',
-            r'扫码下载.*',
-            r'新浪客户端.*',
-            r'\[广告\].*',
-            r'热点推荐.*',
-            r'相关新闻.*',
-        ],
-        'truncate_markers': [
-            '责任编辑',
-            '本文来源',
-            '更多精彩',
-            '新浪客户端',
-        ],
-    },
-    'www.toutiao.com': {
-        'selectors': ['article'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'今日头条.*',
-            r'下载客户端.*',
-            r'扫码下载.*',
-            r'更多精彩.*',
-            r'相关推荐.*',
-            r'猜你喜欢.*',
-            r'\[广告\].*',
-            r'热点推荐.*',
-        ],
-        'truncate_markers': [
-            '下载客户端',
-            '更多精彩',
-            '相关推荐',
-        ],
-    },
-    'www.thepaper.cn': {
-        'selectors': ['.news_txt'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'澎湃新闻.*',
-            r'责任编辑.*',
-            r'扫码下载.*',
-            r'澎湃客户端.*',
-            r'更多精彩.*',
-            r'\[广告\].*',
-        ],
-        'truncate_markers': [
-            '责任编辑',
-            '澎湃客户端',
-            '更多精彩',
-        ],
-    },
-    'www.guancha.cn': {
-        'selectors': ['.content'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'观察者网.*',
-            r'责任编辑.*',
-            r'扫码下载.*',
-            r'更多精彩.*',
-            r'\[广告\].*',
-        ],
-        'truncate_markers': [
-            '责任编辑',
-            '更多精彩',
-        ],
-    },
-    'www.cctv.com': {
-        'selectors': ['.content_area'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'央视网.*',
-            r'责任编辑.*',
-            r'本文来源.*',
-            r'更多精彩.*',
-            r'\[广告\].*',
-        ],
-        'truncate_markers': [
-            '责任编辑',
-            '本文来源',
-        ],
-    },
-    'news.cctv.com': {
-        'selectors': ['.content_area'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'央视网.*',
-            r'责任编辑.*',
-            r'本文来源.*',
-            r'更多精彩.*',
-            r'\[广告\].*',
-        ],
-        'truncate_markers': [
-            '责任编辑',
-            '本文来源',
-        ],
-    },
-    'www.people.com.cn': {
-        'selectors': ['.box_con'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'人民网.*',
-            r'责任编辑.*',
-            r'本文来源.*',
-            r'更多精彩.*',
-            r'\[广告\].*',
-        ],
-        'truncate_markers': [
-            '责任编辑',
-            '本文来源',
-        ],
-    },
-    'news.people.com.cn': {
-        'selectors': ['.box_con'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'人民网.*',
-            r'责任编辑.*',
-            r'本文来源.*',
-            r'更多精彩.*',
-            r'\[广告\].*',
-        ],
-        'truncate_markers': [
-            '责任编辑',
-            '本文来源',
-        ],
-    },
-    'www.xinhuanet.com': {
-        'selectors': ['.article'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'新华网.*',
-            r'责任编辑.*',
-            r'本文来源.*',
-            r'更多精彩.*',
-            r'\[广告\].*',
-        ],
-        'truncate_markers': [
-            '责任编辑',
-            '本文来源',
-        ],
-    },
-    'www.news.cn': {
-        'selectors': ['.article'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'新华网.*',
-            r'责任编辑.*',
-            r'本文来源.*',
-            r'更多精彩.*',
-            r'\[广告\].*',
-        ],
-        'truncate_markers': [
-            '责任编辑',
-            '本文来源',
-        ],
-    },
-    'www.chinanews.com': {
-        'selectors': ['.content'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'中国新闻网.*',
-            r'责任编辑.*',
-            r'本文来源.*',
-            r'更多精彩.*',
-            r'\[广告\].*',
-        ],
-        'truncate_markers': [
-            '责任编辑',
-            '本文来源',
-        ],
-    },
-    'www.ifeng.com': {
-        'selectors': ['.yc_con'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'凤凰网.*',
-            r'责任编辑.*',
-            r'本文来源.*',
-            r'更多精彩.*',
-            r'扫码下载.*',
-            r'凤凰客户端.*',
-            r'\[广告\].*',
-        ],
-        'truncate_markers': [
-            '责任编辑',
-            '本文来源',
-            '凤凰客户端',
-        ],
-    },
-    'news.ifeng.com': {
-        'selectors': ['.yc_con'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'凤凰网.*',
-            r'责任编辑.*',
-            r'本文来源.*',
-            r'更多精彩.*',
-            r'扫码下载.*',
-            r'凤凰客户端.*',
-            r'\[广告\].*',
-        ],
-        'truncate_markers': [
-            '责任编辑',
-            '本文来源',
-            '凤凰客户端',
-        ],
-    },
-    'www.zhihu.com': {
-        'selectors': ['.Post-RichText'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'知乎.*',
-            r'扫码下载.*',
-            r'知乎App.*',
-            r'\[广告\].*',
-            r'相关推荐.*',
-        ],
-        'truncate_markers': [
-            '扫码下载',
-            '知乎App',
-        ],
-    },
-    'zhuanlan.zhihu.com': {
-        'selectors': ['.Post-RichText'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'知乎.*',
-            r'扫码下载.*',
-            r'知乎App.*',
-            r'\[广告\].*',
-            r'相关推荐.*',
-        ],
-        'truncate_markers': [
-            '扫码下载',
-            '知乎App',
-        ],
-    },
-    'www.bilibili.com': {
-        'selectors': ['.article-content'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'哔哩哔哩.*',
-            r'扫码下载.*',
-            r'B站客户端.*',
-            r'\[广告\].*',
-            r'相关推荐.*',
-        ],
-        'truncate_markers': [
-            '扫码下载',
-            'B站客户端',
-        ],
-    },
-    'www.36kr.com': {
-        'selectors': ['.article-content'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'36氪.*',
-            r'扫码下载.*',
-            r'36氪App.*',
-            r'\[广告\].*',
-            r'相关推荐.*',
-        ],
-        'truncate_markers': [
-            '扫码下载',
-            '36氪App',
-        ],
-    },
-    'www.huxiu.com': {
-        'selectors': ['.article-content'] + DEFAULT_SELECTORS,
-        'noise_patterns': [
-            r'虎嗅.*',
-            r'扫码下载.*',
-            r'虎嗅App.*',
-            r'\[广告\].*',
-            r'相关推荐.*',
-        ],
-        'truncate_markers': [
-            '扫码下载',
-            '虎嗅App',
-        ],
-    },
-}
+from site_configs import DEFAULT_SELECTORS, SITE_CONFIGS
 
 
 def fail(msg, code=1, as_json=False):
@@ -533,10 +114,25 @@ def fallback_fetch(url):
         raise RuntimeError(f"urllib fallback failed: {e}")
 
 
+STEALTHY_FETCHER_CONFIG = {
+    'headless': True,           # 无头模式，隐藏浏览器窗口
+    'network_idle': True,       # 等待网络空闲（500ms 内无请求）
+    'disable_resources': True,  # 屏蔽图片、视频、字体、样式表等资源，加速加载
+    'hide_canvas': True,        # 添加随机噪声防止 Canvas 指纹识别
+    'block_webrtc': True,       # 阻止 WebRTC 泄露本地 IP
+    'google_search': True,      # 设置 Google Referer 头，模拟从搜索进入
+    'solve_cloudflare': True,   # 自动解决 Cloudflare 验证码
+}
+
+FETCHER_CONFIG = {
+    'stealthy_headers': True,   # 使用真实浏览器请求头
+}
+
+
 def scrapling_fetch(url, selectors, text_only=False):
     try:
         from scrapling.fetchers import StealthyFetcher
-        page = StealthyFetcher.fetch(url, headless=True, network_idle=True)
+        page = StealthyFetcher.fetch(url, **STEALTHY_FETCHER_CONFIG)
         
         for selector in selectors:
             els = page.css(selector)
@@ -555,7 +151,8 @@ def scrapling_fetch(url, selectors, text_only=False):
     
     try:
         from scrapling.fetchers import Fetcher
-        page = Fetcher().get(url, stealthy_headers=True)
+        fetcher = Fetcher()
+        page = fetcher.get(url, **FETCHER_CONFIG)
         
         for selector in selectors:
             els = page.css(selector)
@@ -587,7 +184,6 @@ def fetch_one(url, max_chars, as_json, custom_selector, text_only):
 
     selectors = get_selectors(url, custom_selector)
     
-
     html, page, used_selector, fetch_mode = scrapling_fetch(url, selectors, text_only)
 
     if text_only:

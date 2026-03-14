@@ -10,7 +10,8 @@
 scrapling-news-boost/
 ├── SKILL.md              # 技能入口描述文件，供大模型理解技能用途和使用方法
 ├── scripts/
-│   └── scrapling_fetch.py # 核心脚本：网页抓取与噪音处理
+│   ├── scrapling_fetch.py # 核心脚本：网页抓取与噪音处理逻辑
+│   └── site_configs.py    # 网站配置：选择器、噪音模式、截断标记
 ├── references/
 │   └── usage.md          # 用法参考文档
 ├── site-test.md          # 测试网站列表（仅在明确要求全局测试时执行）
@@ -93,7 +94,7 @@ DEFAULT_SELECTORS = [
 
 ## 添加新网站配置
 
-当需要为新网站添加专门配置时，在 `SITE_CONFIGS` 字典中添加：
+当需要为新网站添加专门配置时，在 `scripts/site_configs.py` 的 `SITE_CONFIGS` 字典中添加：
 
 ```python
 'example.com': {
@@ -142,7 +143,7 @@ DEFAULT_SELECTORS = [
 ### 代码风格
 
 - 保持与现有代码风格一致
-- 新增网站配置应放在 `SITE_CONFIGS` 字典中
+- 新增网站配置应放在 `scripts/site_configs.py` 的 `SITE_CONFIGS` 字典中
 - 噪音模式使用正则表达式，注意转义特殊字符
 
 ## 输出格式
