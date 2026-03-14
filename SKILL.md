@@ -1,6 +1,6 @@
 ---
 name: scrapling-web-fetch
-description: 使用 Scrapling 获取现代网页正文内容，支持微信公众号文章抓取与尾部噪音清洗，适合抓取博客、新闻、公告及许多普通 web_fetch 不稳定、存在反爬或动态渲染干扰的网页。Supports WeChat article cleanup, markdown output, batch fetch.
+description: 使用 Scrapling 获取现代网页正文内容，适合抓取博客、新闻、网站、微信公众号文章及许多普通 web_fetch 不稳定、存在反爬或动态渲染干扰的网页。支持噪音清洗，结构化输出适合大模型理解。
 ---
 
 # Scrapling Web Fetch
@@ -93,7 +93,7 @@ uv pip install scrapling html2text
 - 获取文章正文
 - 抓博客/新闻/公告正文
 - 将网页转成 Markdown 供后续总结
-- 常规 fetch 效果差，希望提升现代网页抓取稳定性
+- 常规 web_fetch 效果差，希望提升现代网页抓取稳定性
 - 需要绕过 Cloudflare 等反爬机制
 - 需要清理国内媒体网站噪音
 

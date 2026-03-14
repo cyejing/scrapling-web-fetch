@@ -36,6 +36,13 @@ from site_configs import DEFAULT_SELECTORS, SITE_CONFIGS
 
 
 def fail(msg, code=1, as_json=False):
+    """输出错误信息并退出程序
+    
+    Args:
+        msg: 错误信息
+        code: 退出码，默认 1
+        as_json: 是否以 JSON 格式输出
+    """
     if as_json:
         print(json.dumps({'ok': False, 'error': msg}, ensure_ascii=False))
     else:
@@ -44,11 +51,28 @@ def fail(msg, code=1, as_json=False):
 
 
 def get_site_config(url):
+    """根据 URL 获取网站的噪音处理配置
+    
+    Args:
+        url: 目标 URL
+        
+    Returns:
+        dict: 网站配置字典，包含 selectors、noise_patterns、truncate_markers
+    """
     host = urlparse(url).hostname or ''
     return SITE_CONFIGS.get(host, {})
 
 
 def get_selectors(url, custom_selector=None):
+    """获取用于提取正文内容的 CSS 选择器列表
+    
+    Args:
+        url: 目标 URL
+        custom_selector: 自定义选择器，若提供则覆盖默认配置
+        
+    Returns:
+        list: CSS 选择器列表
+    """
     if custom_selector:
         return [custom_selector]
     config = get_site_config(url)
@@ -56,6 +80,23 @@ def get_selectors(url, custom_selector=None):
 
 
 def score_markdown(md):
+    """评估 Markdown 内容的质量分数
+    
+    根据内容长度、结构特征等指标计算质量分数，用于判断抓取结果的有效性。
+    分数范围 0-15，分数越高表示内容质量越好。
+    
+    评分规则：
+    - 内容长度：每 500 字符加 1 分，最高 10 分
+    - 换行符：有换行加 2 分（表示有段落结构）
+    - Markdown 标记：有 # 或 - 加 1 分（表示有标题或列表）
+    - 单词数量：超过 80 个单词加 2 分
+    
+    Args:
+        md: Markdown 文本内容
+        
+    Returns:
+        int: 质量分数，范围 0-15
+    """
     text = md.strip()
     if not text:
         return 0
@@ -71,6 +112,19 @@ def score_markdown(md):
 
 
 def clean_site_noise(markdown, url):
+    """清理 Markdown 内容中的噪音
+    
+    根据网站配置执行两级噪音清理：
+    1. 截断清理：遇到截断标记后删除后续所有内容
+    2. 行过滤：删除匹配噪音模式的行
+    
+    Args:
+        markdown: 原始 Markdown 内容
+        url: 目标 URL，用于获取网站特定配置
+        
+    Returns:
+        tuple: (清理后的内容, 是否执行了清理)
+    """
     config = get_site_config(url)
     patterns = config.get('noise_patterns', [])
     truncate_markers = config.get('truncate_markers', [])
@@ -103,6 +157,19 @@ def clean_site_noise(markdown, url):
 
 
 def fallback_fetch(url):
+    """使用 urllib 作为最后的回退方案抓取网页
+    
+    当 Scrapling 不可用或失败时，使用纯 Python 的 urllib 进行抓取。
+    
+    Args:
+        url: 目标 URL
+        
+    Returns:
+        tuple: (HTML 内容, 抓取模式名称)
+        
+    Raises:
+        RuntimeError: 抓取失败时抛出
+    """
     try:
         req = urllib.request.Request(
             url,
@@ -130,6 +197,21 @@ FETCHER_CONFIG = {
 
 
 def scrapling_fetch(url, selectors, text_only=False):
+    """使用 Scrapling 抓取网页内容
+    
+    采用三级回退机制：
+    1. StealthyFetcher：浏览器级隐身抓取，最佳反爬能力
+    2. Fetcher：HTTP 级抓取，带隐蔽请求头
+    3. urllib：纯 Python 回退方案
+    
+    Args:
+        url: 目标 URL
+        selectors: CSS 选择器列表，按优先级尝试
+        text_only: 是否仅返回纯文本（不转换 Markdown）
+        
+    Returns:
+        tuple: (内容, page对象, 使用的选择器, 抓取模式)
+    """
     try:
         from scrapling.fetchers import StealthyFetcher
         page = StealthyFetcher.fetch(url, **STEALTHY_FETCHER_CONFIG)
@@ -178,6 +260,20 @@ def scrapling_fetch(url, selectors, text_only=False):
 
 
 def fetch_one(url, max_chars, as_json, custom_selector, text_only):
+    """抓取单个 URL 并返回结构化结果
+    
+    执行完整的抓取流程：URL 验证 -> 抓取 -> HTML 转 Markdown -> 噪音清理 -> 结果封装
+    
+    Args:
+        url: 目标 URL
+        max_chars: 最大输出字符数
+        as_json: 是否以 JSON 格式输出
+        custom_selector: 自定义 CSS 选择器
+        text_only: 是否仅返回纯文本
+        
+    Returns:
+        dict: 抓取结果，包含 ok、url、title、content 等字段
+    """
     parts = urlparse(url)
     if parts.scheme not in ('http', 'https'):
         return {'ok': False, 'url': url, 'error': 'url must start with http:// or https://'}
@@ -240,6 +336,11 @@ def fetch_one(url, max_chars, as_json, custom_selector, text_only):
 
 
 def main():
+    """命令行入口函数
+    
+    解析命令行参数，执行抓取任务，输出结果。
+    支持单个 URL 抓取和批量抓取。
+    """
     parser = argparse.ArgumentParser(
         description="Fetch a URL with Cloudflare bypass via Scrapling, urllib fallback. Supports WeChat article cleanup, markdown output, batch fetch."
     )
