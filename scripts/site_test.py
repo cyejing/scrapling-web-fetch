@@ -116,10 +116,12 @@ def cmd_save_result(args):
     content = f"""## 测试结果
 - **编号**：{args.id}
 - **原始 URL**：{case['url']}
+- **文章标题**：{args.title}
 - **抓取状态**：{status_display}
-- **抓取模式**：{args.fetch_mode or '-'}
-- **解析器**：{args.parser or '-'}
-- **文本长度**：{args.content_length or '-'}
+- **抓取模式**：{args.fetch_mode}
+- **解析器**：{args.parser}
+- **文本长度**：{args.content_length}
+- **总耗时**：{args.total_duration}s
 
 ## 质量评分：{args.score} 分
 
@@ -127,7 +129,7 @@ def cmd_save_result(args):
 {args.comment}
 
 ## 优化建议
-
+{args.suggestion}
 """
     
     filename = f"{args.id}_{case['domain']}.md"
@@ -167,9 +169,12 @@ def main():
     save_parser.add_argument("--status", required=True, choices=["passed", "failed", "timeout", "pending"])
     save_parser.add_argument("--score", required=True, type=int)
     save_parser.add_argument("--comment", required=True)
-    save_parser.add_argument("--fetch-mode", dest="fetch_mode")
-    save_parser.add_argument("--parser")
-    save_parser.add_argument("--content-length", dest="content_length", type=int)
+    save_parser.add_argument("--fetch-mode", required=True, dest="fetch_mode")
+    save_parser.add_argument("--parser", required=True)
+    save_parser.add_argument("--content-length", required=True, dest="content_length", type=int)
+    save_parser.add_argument("--total-duration", required=True, dest="total_duration", type=float)
+    save_parser.add_argument("--title", required=True)
+    save_parser.add_argument("--suggestion", required=True)
     
     update_parser = subparsers.add_parser("update-case", help="Update case status")
     update_parser.add_argument("--id", required=True, help="Case ID")
