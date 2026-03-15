@@ -48,7 +48,7 @@ uv run scripts/scrapling_fetch.py <url> 10000 --parser <auto|trafilatura|scrapli
 # 文章标题
 
 > URL: https://example.com | 最终URL: https://example.com/article
-> 内容长度: 5000 字符 | 质量评分: 15
+> 内容长度: 5000 字符 
 > 抓取模式: stealth | 解析器: trafilatura
 > 耗时: 抓取 4.89s + 解析 0.67s = 总计 5.56s
 
@@ -65,7 +65,6 @@ uv run scripts/scrapling_fetch.py <url> 10000 --parser <auto|trafilatura|scrapli
   "final_url": "https://example.com/article",
   "title": "文章标题",
   "content_length": 5000,
-  "quality_score": 15,
   "fetch_mode": "stealth",
   "parser": "trafilatura",
   "fetch_duration": 4.89,
@@ -101,5 +100,16 @@ playwright install chromium                # 安装 Chromium 浏览器
 3.正文内容噪音过多 ，警告级别
 
 当发生上述问题的话，在logs目录记录这次抓取数据:
-1. url
-2. 
+ 原始 URL	测试的目标 URL
+抓取状态	成功/失败
+mode	fetch mode
+解析器	parser
+文本长度	content_length 值
+质量评分	0-100 分
+测试输出内容	完整的抓取内容
+质量评分标准（0-100分）：
+
+90-100：内容完整，噪音清除干净
+70-89：内容基本完整，有少量噪音
+50-69：内容有缺失或噪音较多
+0-49：抓取失败或内容严重缺失
