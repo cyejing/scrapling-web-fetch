@@ -2,7 +2,6 @@ DEFAULT_SELECTORS = [
     'article',
     'main',
     '.post-content',
-    '[class*="body"]',
     'body',
 ]
 

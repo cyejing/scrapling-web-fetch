@@ -175,7 +175,7 @@ def fallback_fetch(url):
             url,
             headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
         )
-        with urllib.request.urlopen(req, timeout=15) as r:
+        with urllib.request.urlopen(req, timeout=10) as r:
             return r.read().decode("utf-8", errors="replace"), "urllib"
     except Exception as e:
         raise RuntimeError(f"urllib fallback failed: {e}")
@@ -184,15 +184,17 @@ def fallback_fetch(url):
 STEALTHY_FETCHER_CONFIG = {
     'headless': True,           # 无头模式，隐藏浏览器窗口
     'network_idle': True,       # 等待网络空闲（500ms 内无请求）
-    'disable_resources': True,  # 屏蔽图片、视频、字体、样式表等资源，加速加载
     'hide_canvas': True,        # 添加随机噪声防止 Canvas 指纹识别
     'block_webrtc': True,       # 阻止 WebRTC 泄露本地 IP
     'google_search': True,      # 设置 Google Referer 头，模拟从搜索进入
     'solve_cloudflare': True,   # 自动解决 Cloudflare 验证码
+    'real_chrome': True,        # 使用真实 Chrome 浏览器，而非 Scrapling 默认的 Firefox
+    'timeout': 10000,           # 超时时间（毫秒），10秒
 }
 
 FETCHER_CONFIG = {
     'stealthy_headers': True,   # 使用真实浏览器请求头
+    'timeout': 10,              # 超时时间（秒）
 }
 
 
