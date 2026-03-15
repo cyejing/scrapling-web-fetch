@@ -92,3 +92,14 @@ uv run scripts/scrapling_fetch.py <url> 10000 --parser <auto|trafilatura|scrapli
 uv sync                                    # 安装项目依赖
 playwright install chromium                # 安装 Chromium 浏览器
 ```
+
+## 自我提升
+
+使用该技能后，如果返回内容存在问题:
+1。比如抓取失败，有报错输出等
+2. 正文内容大部分缺失
+3.正文内容噪音过多 ，警告级别
+
+当发生上述问题的话，在logs目录记录这次抓取数据:
+1. url
+2. 
