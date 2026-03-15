@@ -103,8 +103,8 @@ class ScraplingFetcher:
 
         try:
             return self._fetch_with_stealthy(url)
-        except ImportError:
-            print("WARN: scrapling not installed, falling back to urllib")
+        except ImportError as e:
+            print(f"WARN: scrapling not installed, falling back to urllib. {e}")
         except Exception as e:
             print(f"WARN: StealthyFetcher failed ({e}), trying Fetcher")
 
