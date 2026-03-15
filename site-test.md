@@ -35,6 +35,11 @@
 
 - 对比测试时，根据编号和域名查找上一次测试结果
 
+## 测试用法
+```bash
+uv run scripts/scrapling_fetch.py <url> 15000 --json
+```
+
 ## 测试输出格式
 
 ### JSON 输出示例
@@ -78,7 +83,6 @@
 |------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 01 | mp.weixin.qq.com | https://mp.weixin.qq.com/s/FrWhkYKonLX3ZuD6nDhXpw                                                                                                                                                                                                                                                                |
 | 02 | finance.sina.com.cn | https://finance.sina.com.cn/roll/2025-09-19/doc-infrchxs4006271.shtml                                                                                                                                                                                                                                            |
-| 04 | xueqiu.com | https://xueqiu.com/S/TSLA                                                                                                                                                                                                                                                                                        |
 | 05 | www.msn.cn | https://www.msn.cn/zh-cn/news/other/%E6%9D%8E%E8%BF%9E%E6%9D%B0%E7%AB%9F%E6%88%90-%E9%99%8C%E7%94%9F%E4%BA%BA-%E5%90%B4%E4%BA%AC%E8%B0%A2%E9%9C%86%E9%94%8B%E6%88%90%E6%9C%80%E5%90%8E%E4%B8%80%E4%BB%A3%E5%8A%9F%E5%A4%AB%E5%B7%A8%E6%98%9F-%E6%B1%9F%E6%B9%96%E8%B0%81%E6%9D%A5%E6%8E%A5%E6%A3%92/ar-AA1YB1E3  |
 | 06 | www.sohu.com | https://www.sohu.com/a/996235269_121608032                                                                                                                                                                                                                                                                       |
 | 07 | news.qq.com | https://news.qq.com/rain/a/20260313A08DDL00                                                                                                                                                                                                                                                                      |

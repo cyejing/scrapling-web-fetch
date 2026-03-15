@@ -18,7 +18,7 @@ import time
 
 from fetcher import ScraplingFetcher
 from parsers import ParserManager
-from output import OutputFormatter, OutputResult, calculate_quality_score
+from format import OutputFormatter, OutputResult, calculate_quality_score
 
 
 def main():

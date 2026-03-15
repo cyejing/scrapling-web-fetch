@@ -18,7 +18,7 @@ scrapling-news-boost/
 │   │   ├── trafilatura_parser.py
 │   │   ├── scrapling_parser.py
 │   │   └── manager.py
-│   └── output/            # 输出模块
+│   └── format/            # 格式化模块
 │       └── formatters.py
 ├── references/
 │   └── usage.md          # 用法参考文档
